@@ -42,6 +42,10 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private bool m_Jumping;
         private AudioSource m_AudioSource;
 
+		private FirstPersonController firstPerson;
+		private CharacterController characterController;
+		private bool check;
+
         // Use this for initialization
         private void Start()
         {
@@ -55,6 +59,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_Jumping = false;
             m_AudioSource = GetComponent<AudioSource>();
 			m_MouseLook.Init(transform , m_Camera.transform);
+			characterController = GetComponent<CharacterController> ();
+			firstPerson = GetComponent<FirstPersonController> ();
+			check = true;
         }
 
 
@@ -81,6 +88,22 @@ namespace UnityStandardAssets.Characters.FirstPerson
             }
 
             m_PreviouslyGrounded = m_CharacterController.isGrounded;
+
+			//Cキーが押されたときに、高さと速さを半分にする（=しゃがむ）を一回だけ実行
+			//Cキーが離されたとき、高さと速さを2倍にする
+			if(Input.GetKey(KeyCode.C)){
+				if (check) {
+					characterController.height = 1.0f;
+					firstPerson.m_WalkSpeed /= 2;
+					firstPerson.m_RunSpeed /= 2;
+					check = false;
+				}
+			} else if(Input.GetKeyUp(KeyCode.C)) {
+				characterController.height = 2.0f;
+				firstPerson.m_WalkSpeed *= 2;
+				firstPerson.m_RunSpeed *= 2;
+				check = true;
+			}
         }
 
 
